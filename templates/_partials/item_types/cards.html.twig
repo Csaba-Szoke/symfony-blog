@@ -1,0 +1,39 @@
+<div class="card-group">
+    <div class="row">
+        {% for blog in blogs %}
+            {% set blog = blog[0] is defined ? blog[0] : blog %}
+            {% set likesCount = blog.likesCount is defined ? blog.likesCount : blog.likes|length %}
+            {% set commentsCount = blog.commentsCount is defined ? blog.commentsCount : blog.comments|length %}
+
+            <div class="col-sm-4">
+                <div class="card bg-dark mb-4">
+                    {% if blog.img %}
+                        <a href="{{ path('show_blog', {id: blog.id}) }}">
+                            <img class="img-fluid card-img-top" src="/uploads/blogs/{{ blog.img }}">
+                        </a>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{ path('show_blog', {id: blog.id}) }}">{{ blog.title }}</a>
+                            <label class="small m-0">({{ blog.comments()|length }} comments)</label>
+                        </h5>
+                        <p class="card-text mt-3">
+                            {{ blog.getShortContent|striptags }}</p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Written by:
+                            <a href="{{ path('user_profile', {id: blog.user.id}) }}">
+                                {{ blog.user.username }}
+                            </a>
+                        </small>
+                        <button
+                            class="btn {{ not app.user or not app.user.isBlogLiked(blog.id) ? 'btn-outline-danger' : 'btn-danger' }} btn-sm like-btn"
+                            data-id="{{ blog.id }}">
+                            <span class="number-of-likes">{{ blog.getLikes()|length }}</span> &hearts;
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

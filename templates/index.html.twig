@@ -1,0 +1,107 @@
+{% extends "layouts/base.html.twig" %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+    {% if searched %}
+        <p>Search {{ searched['type'] }}: {{ searched['value'] }}</p>
+    {% endif %}
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="card-group">
+                {% for blog in blogs %}
+                    <div class="col-sm-12 p-0">
+                        <div class="card bg-dark mb-4">
+                            {% if blog.img %}
+                            <a href="{{ path('show_blog', {id: blog.id}) }}">
+                                <img class="img-fluid card-img-top" src="{{ asset('uploads/blogs/' ~ blog.img) }}">
+                            </a>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{{ path('show_blog', {id: blog.id}) }}">{{ blog.title }}</a>
+                                    <label class="small m-0">({{ blog.comments|length }} comments)</label>
+                                </h5>
+                                <p class="card-text mt-3">
+                                    {{ blog.getShortContent|striptags }}</p>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Written by:
+                                        <a href="{{ path('user_profile', {id: blog.user.id}) }}">
+                                            {{ blog.user.username }}
+                                        </a>
+                                        |
+                                        {% if blog.createdAt == 'Unknown' %}
+                                            <label>{{ blog.createdAt }}</label>
+                                        {% else %}
+                                            <label title="{{ blog.createdAt|date('Y.m.d - H:i:s') }}">{{ blog.createdAt|ago }}</label>
+                                        {% endif %}
+                                    </small>
+                                    {% if blog.category %}
+                                    | <small class="text-muted">Category: <a href="{{ path('index_search_cat', {cat: blog.category.slug}) }}">{{ blog.category.title }}</a></small>
+                                    {% endif %}
+                                    {% if blog.tags|length > 0 %}
+                                        | <small class="text-muted">Tags:
+                                            {% for tag in blog.tags %}
+                                                <a href="{{ path('index_search_tag', {tag: tag.slug}) }}">{{ tag.name }}{{ not loop.last ? ',' : '' }}</a>
+                                            {% endfor %}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <button class="btn {{ not app.user or not app.user.isBlogLiked(blog.id) ? 'btn-outline-danger' : 'btn-danger' }} btn-sm like-btn" data-id="{{ blog.id }}">
+                                    <span class="number-of-likes">{{ blog.likes|length }}</span> &hearts;
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <h3>No blog posts were found.</h3>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="col-sm-12">
+                <form>
+                    <div class="form-group">
+                        <input class="form-control" placeholder="Quick search..." name="search" value="{{ app.request.query.get('search') }}">
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-12">
+                <div class="card-group">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            Categories
+                        </div>
+                        <div class="card-body">
+                            {% for cat in categories %}
+                                <a href="{{ path('index_search_cat', {cat: cat[0].slug}) }}">{{ cat[0].title }} ({{ cat.blogsCount }}){{ not loop.last ? ',' : '' }}</a>
+                            {% else %}
+                                <p>No categories found.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-group">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            Tags
+                        </div>
+                        <div class="card-body">
+                            {% for tag in tags %}
+                                <a href="{{ path('index_search_tag', {tag: tag[0].slug}) }}">{{ tag[0].name }} ({{ tag.blogsCount }}){{ not loop.last ? ',' : '' }}</a>
+                            {% else %}
+                                    <p>No tags found.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <p>Showing {{ blogs.getCustomParameter('itemsFrom') }} to {{ blogs.getCustomParameter('itemsTo') }} of {{ blogs.getTotalItemCount }} blog posts</p>
+        {{ knp_pagination_render(blogs) }}
+    </div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "admin/layouts/base.html.twig" %}
+
+{% block title %}Blog tags{% endblock %}
+
+{% block body %}
+    <a class="btn btn-primary mb-2" href="{{ path('admin_add_tag') }}">New tag</a>
+    <h1 class="mb-3">Blog tags</h1>
+    <div class="row align-items-center justify-content-between">
+        <div class="col-md-2">
+            <p>Showing {{ tags.getCustomParameter('itemsFrom') }} to {{ tags.getCustomParameter('itemsTo') }} of {{ tags.getTotalItemCount }} items</p>
+        </div>
+        <div class="col-md-3">
+            <form>
+                <div class="input-group mb-3">
+                    <input type="text" name="search" class="form-control" value="{{ app.request.query.get('search') }}">
+                    <button type="submit" class="btn btn-secondary ml-2">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div>
+        {% if tags|length > 0 %}
+            <table class="table table-striped table-dark text-center">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Slug</th>
+                    <th>Actions</th>
+                </tr>
+                {% for tag in tags %}
+                    <tr>
+                        <td>{{ tag.id }}</td>
+                        <td>{{ tag.name }}</td>
+                        <td>{{ tag.slug }}</td>
+                        <td>
+                            <a class="btn btn-sm btn-info" href="{{ path('index_search_tag', {tag: tag.slug}) }}">View</a>
+                            <a class="btn btn-sm btn-warning" href="{{ path('admin_edit_tag', {id: tag.id}) }}">Edit</a>
+                            <form class="d-inline" action="{{ path('admin_delete_tag', {id: tag.id}) }}" method="POST">
+                                    <button type="submit" class="delete-button btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            <table>
+            <div>
+                {{ knp_pagination_render(tags) }}
+            </div>
+        {% else %}
+            No tags found.
+        {% endif %}
+    </div>
+{% endblock %}

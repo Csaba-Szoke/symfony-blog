@@ -1,0 +1,35 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}{{ user.username }}'s profile{% endblock %}
+
+{% block body %}
+    <div class="card p-3 bg-dark">
+        <h2 class="mb-3 text-light">{{ user.username }}'s profile</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <table class="table">
+                    <tr>
+                        <th class="text-light">Username:</th>
+                        <td class="text-light">{{ user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-light">Email:</th>
+                        <td class="text-light">{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-light">Blog posts:</th>
+                        <td class="text-light">{{ user.getPublicBlogs|length }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-light">Blog posts liked:</th>
+                        <td class="text-light">{{ user.getLikes|length }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-light">Comments:</th>
+                        <td class="text-light">{{ user.getPublicComments|length }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

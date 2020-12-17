@@ -1,0 +1,18 @@
+{% extends "admin/layouts/base.html.twig" %}
+
+{% block title %}Edit blog category{% endblock %}
+
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{% block body %}
+    <div class="card p-3 bg-dark">
+        <h1>Edit blog category</h1>
+
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+
+            <button class="btn btn-primary mt-3" type="submit">Update</button>
+        {{ form_end(form) }}
+
+    </div>
+{% endblock %}

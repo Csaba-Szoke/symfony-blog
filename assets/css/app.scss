@@ -1,0 +1,67 @@
+@import "~bootstrap/scss/bootstrap";
+
+body {
+    color: #999;
+    background-color: #272b30;
+}
+
+a,
+a:hover {
+    color: #ccc;
+}
+
+input,
+select,
+textarea,
+.custom-file-label,
+.custom-file-label::after {
+    background-color: #2e3135 !important;
+    border-color: #000 !important;
+    color: #fff !important;
+}
+
+.navbar {
+    .dropdown-menu.bg-dark {
+        a {
+            color: #999;
+
+            &:hover {
+                text-decoration: none;
+                color: #fff;
+                background: rgba(255, 255, 255, 0.2);
+            }
+        }
+    }
+}
+
+.page-item {
+    .page-link {
+        color: #999;
+        background-color: #343a40;
+        border-color: #999;
+
+        &:hover {
+            color: #ededed;
+            background-color: initial;
+            border-color: #ededed;
+        }
+
+        &:focus {
+            box-shadow: unset;;
+        }
+    }
+    &.active {
+        .page-link {
+            color: #999;
+            background-color: #2e3135;
+            border-color: #999;
+        }
+    }
+    &.disabled {
+        .page-link {
+            color: #999;
+            background-color: #343a40;
+            border-color: #999;
+        }
+    }
+}

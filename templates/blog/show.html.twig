@@ -1,0 +1,81 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Blog - {{ blog.title }}{% endblock %}
+
+{% block body %}
+    <div class="card p-3 bg-dark">
+        <h1>{{ blog.title }}</h1>
+        <p class="card-text small m-0">Written by: <a href="{{ path('user_profile', {id: blog.user.id}) }}">{{ blog.user.username }}</a>
+            |
+            {% if blog.createdAt == 'Unknown' %}
+                <label>{{ blog.createdAt }}</label>
+            {% else %}
+                <label title="{{ blog.createdAt|date('Y.m.d - H:i:s') }}">{{ blog.createdAt|ago }}</label>
+            {% endif %}
+            {% if blog.category|length %}
+            | Category: <a href="{{ path('index_search_cat', {cat: blog.category.slug}) }}">{{ blog.category.title }}</a>
+            {% endif %}
+            {% if blog.tags|length %}
+            | Tags:
+                {% for tag in blog.tags %}
+                    <a href="{{ path('index_search_tag', {tag: tag.slug}) }}">{{ tag.name }}{{ not loop.last ? ',' : '' }}</a>
+                {% endfor %}
+            {% endif %}
+        </p>
+        <div>
+            <button class="mb-3 btn {{ not app.user or not app.user.isBlogLiked(blog.id) ? 'btn-outline-danger' : 'btn-danger' }} btn-sm like-btn" data-id="{{ blog.id }}">
+                <span class="number-of-likes">{{ blog.getLikes()|length }}</span> &hearts;
+            </button>
+        </div>
+        {% if blog.img %}
+            <img class="img-fluid mb-3" src="/uploads/blogs/{{ blog.img }}">
+        {% endif %}
+        <div>
+            {{ blog.content|raw }}
+        </div>
+    </div>
+    <div class="card bg-dark p-3 mt-5 mb-5">
+        <h2 class="mb-0">Comments ({{ blog.comments()|length }})</h2><hr>
+        <div class="row pb-4">
+            {% for error in app.flashes('errors') %}
+                <div class="col-md-12">
+                    <div class="alert alert-danger">
+                        {{ error|raw }}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="col-md-4">
+                <form method="POST" action="{{ path('save_comment', {blog_id: blog.id}) }}">
+                    <div class="form-group">
+                        <textarea class="form-control" name="comment"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit">Comment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% for comment in blog.comments() %}
+            <div class="card bg-dark p-3 mb-3">
+                <div class="comment-wrapper">
+                    <div class="float-right" data-id="{{ comment.id }}">
+                        {% if app.user and (app.user.id == comment.user.id or is_granted('ROLE_ADMIN')) %}
+                            <a href="#" class="edit-post">Edit</a>
+                            | <a href="#" class="text-danger delete-post">Delete</a>
+                        {% endif %}
+                    </div>
+                    <p class="mb-0">
+                        <b>{{ comment.user.username }}</b>
+                        <label title="{{ comment.createdAt|date('Y.m.d - H:i:s') }}" class="small">
+                            - {{ comment.createdAt|ago }}
+                            {% if comment.createdAt != comment.updatedAt %}
+                                (Edited: <label title="{{ comment.updatedAt|date('Y.m.d - H:i:s') }}" class="small">{{ comment.updatedAt|ago }}</label>)
+                            {% endif %}
+                        </label>
+                    </p>
+                    <div class="comment-content">{{ comment.content }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

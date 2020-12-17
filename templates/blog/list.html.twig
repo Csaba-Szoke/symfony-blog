@@ -1,0 +1,153 @@
+{% extends "layouts/base.html.twig" %}
+
+{% block title %}Blog posts{% endblock %}
+
+{% block body %}
+    <div class="card bg-dark mb-3">
+        <div class="card-header" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            Advanced search
+            {% if searched %}
+                <span class="badge badge-secondary">{{ searched|length }}</span>
+            {% endif %}
+        </div>
+        <div class="collapse" id="collapseExample">
+            <div class="card-body">
+                <form id="advanced-search">
+                    <input type="hidden" name="perPage" value="{{ app.request.query.get('perPage') }}">
+                    <input type="hidden" name="orderBy" value="{{ app.request.query.get('orderBy') }}">
+                    <input type="hidden" name="itemType" value="{{ app.request.query.get('itemType') }}">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <input id="hasImg" type="checkbox" name="hasImg" value="1" {{ app.request.query.get('hasImg') ? 'checked' : '' }}>
+                                <label for="hasImg">Has picture</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Blog title</label>
+                                <input class="form-control" name="title" value="{{ app.request.query.get('title') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Author</label>
+                                <input class="form-control" name="author" value="{{ app.request.query.get('author') }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Written after</label>
+                                <input type="date" class="form-control" name="writtenAfter" value="{{ app.request.query.get('writtenAfter') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Written before</label>
+                                <input type="date" class="form-control" name="writtenBefore" value="{{ app.request.query.get('writtenBefore') }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Likes from</label>
+                                <input type="number" class="form-control" name="likesFrom" value="{{ app.request.query.get('likesFrom') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Likes to</label>
+                                <input type="number" class="form-control" name="likesTo" value="{{ app.request.query.get('likesTo') }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Comments from</label>
+                                <input type="number" class="form-control" name="commentsFrom" value="{{ app.request.query.get('commentsFrom') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Comments to</label>
+                                <input type="number" class="form-control" name="commentsTo" value="{{ app.request.query.get('commentsTo') }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Categories</label>
+                                <select class="form-control" name="category">
+                                    <option></option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}" {{ category.id == app.request.query.get('category') ? 'selected' : '' }}>{{ category.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Tags</label>
+                                <select class="form-control" name="tags[]" multiple>
+                                    {% for tag in tags %}
+                                        <option value="{{ tag.id }}" {{ tag.id in app.request.query.get('tags') ? 'selected' : '' }}>{{ tag.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-secondary">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-auto d-flex">
+            <div>
+                <select class="form-control" id="perPage">
+                    {% for key, value in allowedOptions['perPage'] %}
+                        <option value="{{ key }}" {{ app.request.query.get('perPage') == key ? 'selected' : '' }}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <select class="form-control ml-1" id="orderBy">
+                    {% for key, value in allowedOptions['orderBy'] %}
+                        <option value="{{ key }}" {{ app.request.query.get('orderBy') == key ? 'selected' : '' }}>{{ value.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-auto ml-auto">
+            <select class="form-control" id="itemType">
+                {% for key, value in allowedOptions['itemType'] %}
+                    <option value="{{ key }}" {{ activeItemType == value ? 'selected' : '' }}>{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    {% if blogs|length > 0 %}
+        {% if activeItemType in allowedOptions['itemType'] %}
+            {% include "_partials/item_types/" ~ activeItemType|u.snake ~ ".html.twig" %}
+        {% else %}
+            {% include "_partials/item_types/detailed.html.twig" %}
+        {% endif %}
+    {% else %}
+        <div class="col-md-12">
+            <p>No blog posts found.</p>
+        </div>      
+    {% endif %}
+    <div class="d-flex flex-column align-items-center">
+        <p>Showing {{ blogs.getCustomParameter('itemsFrom') }} to {{ blogs.getCustomParameter('itemsTo') }} of {{ blogs.getTotalItemCount }} blog posts</p>
+        {{ knp_pagination_render(blogs) }}
+    </div>
+{% endblock %}

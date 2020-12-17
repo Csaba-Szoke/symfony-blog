@@ -1,0 +1,56 @@
+{% extends "admin/layouts/base.html.twig" %}
+
+{% block title %}Blogs{% endblock %}
+
+{% block body %}
+    <a class="btn btn-primary mb-2" href="{{ path('admin_add_blog') }}">New blog post</a>
+    <h1 class="mb-3">Blogs</h1>
+    <div class="row align-items-center justify-content-between">
+        <div class="col-md-2">
+            <p>Showing {{ blogs.getCustomParameter('itemsFrom') }} to {{ blogs.getCustomParameter('itemsTo') }} of {{ blogs.getTotalItemCount }} items</p>
+        </div>
+        <div class="col-md-3">
+            <form>
+                <div class="input-group mb-3">
+                    <input type="text" name="search" class="form-control" value="{{ app.request.query.get('search') }}">
+                    <button type="submit" class="btn btn-secondary ml-2">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div>
+        {% if blogs|length > 0 %}
+            <table class="table table-striped table-dark text-center">
+                <tr>
+                    <th>Id</th>
+                    <th>Title</th>
+                    <th>Slug</th>
+                    <th>Public</th>
+                    <th>Actions</th>
+                </tr>
+                {% for blog in blogs %}
+                    <tr>
+                        <td>{{ blog.id }}</td>
+                        <td>{{ blog.title }}</td>
+                        <td>{{ blog.slug }}</td>
+                        <td>{{ blog.isPublic() }}</td>
+                        <td>
+                            <a class="btn btn-sm btn-info" href="{{ path('show_blog', {id: blog.id}) }}">View</a>
+                            <a class="btn btn-sm btn-warning" href="{{ path('admin_edit_blog', {id: blog.id}) }}">Edit</a>
+                            <form class="d-inline" action="{{ path('admin_delete_blog', {id: blog.id}) }}" method="POST">
+                                    <button type="submit" class="delete-button btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            <table>
+            <div>
+                {{ knp_pagination_render(blogs) }}
+            </div>
+        {% else %}
+            No blogs found.
+        {% endif %}
+    </div>
+{% endblock %}

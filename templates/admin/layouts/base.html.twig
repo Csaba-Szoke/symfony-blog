@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+    </head>
+    <body>
+        <div id="wrapper">
+            {% include 'admin/_partials/navbar.html.twig' %}
+
+            <div id="page-content-wrapper">
+                <a href="#menu-toggle" class="badge badge-secondary" id="menu-toggle">Menu</a>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% block body %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </body>
+</html>

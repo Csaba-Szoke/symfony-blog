@@ -1,0 +1,26 @@
+{% extends "admin/layouts/base.html.twig" %}
+
+{% block title %}Edit blog post{% endblock %}
+
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{% block body %}
+    <div class="card p-3 bg-dark">
+        <h1>Edit blog post</h1>
+
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+
+            {% if blog.img %}
+                <div class="row">
+                    <div class="col-md-3">
+                        <img class="img-fluid" src="{{ asset('/uploads/blogs/' ~ blog.img) }}">
+                    </div>
+                </div>
+            {% endif %}
+
+            <button class="btn btn-primary mt-3" type="submit">Update</button>
+        {{ form_end(form) }}
+
+    </div>
+{% endblock %}
